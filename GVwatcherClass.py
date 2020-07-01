@@ -5,15 +5,19 @@ class GV_WatchingCrystal:
 	godname=''
 	godkey=''
 	try:
-		initfile = open('API.init','r')
+		initfile = open('GVW.init','r')
 		godname = initfile.readline().replace('\n','')
 		godkey = initfile.readline().replace('\n','')
-		enabled = int(initfile.readline().replace('\n',''))
-		dmax = int(initfile.readline().replace('\n',''))
+		enabled = (initfile.readline().replace('\n',''))
+		dmax = (initfile.readline().replace('\n',''))
+		if enabled!='' and dmax!='':
+			enabled = int(enabled)
+			dmax = int(dmax)
 		initfile.close()
 	
 	except FileNotFoundError:
 		enabled = 0 # flag for running
+		dmax = 10 # dairy max
 		pass
 		
 	
@@ -41,36 +45,36 @@ class GV_WatchingCrystal:
 		self.root = Tk()
 		self.root.geometry('800x400')
 		self.initializeStatus()
-		self.initialiseDairy()
 		self.initializeControls()
+		self.initialiseDairy()
+
 		if self.godname!='':
-			self.startbutton.config(text='Успешно запущен!'
 			self.updateInfo()
 			self.root.after(5000,self.updateGValues())
 		
 	def initializeStatus(self):
 
-		self.Status = Frame(self.root,padx=1, bg = self.BG)
+		self.Status = Frame(self.root,padx=1)
 		self.Status.pack(side=LEFT,fill=Y)
 		k=0
 		self.heroStatusL=[]
 		self.LabelValueKeys=[]
 		self.ValLABELS=[]
 		for i in self.statusLabels:
-			self.heroStatusL.append(Label(self.Status, text=i+' : ', bg = self.BG, fg= self.FG))
+			self.heroStatusL.append(Label(self.Status, text=i+' : ', fg= self.FG))
 	
 			self.heroStatusL[k].grid(sticky='w', column=0,row=k)
 			
 			
 			self.LabelValueKeys.append(self.labeleq[i])
-			self.ValLABELS.append(Label(self.Status, text='', bg = self.BG, fg= self.FG))
+			self.ValLABELS.append(Label(self.Status, text='', fg= self.FG))
 			self.ValLABELS[k].grid(sticky='w', column=1,row=k)
 			k+=1
 			
 		self.GValues = dict(zip(self.LabelValueKeys,self.ValLABELS))
 	
 	def initialiseDairy(self):	
-		self.Dairy = Label(self.root, bg = self.BG)
+		self.Dairy = Label(self.root)
 		self.Dairy.pack(side=TOP,fill=X)
 		self.dairy=[]
 
@@ -92,32 +96,51 @@ class GV_WatchingCrystal:
 		self.Dairy.config(text=self.dairystr)
 	
 	def initializeControls(self):				
-		self.Controls = Frame(self.root, bg = self.BG)
+		self.Controls = Frame(self.root)
 		self.Controls.pack(side=TOP,fill=X)
 		
-		self.tf=dict() # 
-		self.tf['Запрос имени'] = Label(self.Controls,text='Поле для\nимени аккаунта')
-		self.tf['Запрос имени'].grid(column=0 , row=1)
-		self.tf['Запрос ключа'] = Label(self.Controls,text='Поле для\nключа аккаунта')
-		self.tf['Запрос ключа'].grid(column=1 , row=1)
-
-		self.namentry= Entry(self.Controls) # account name entry
-		self.namentry.grid(column=0, row=2 )
+		self.accframe = Frame(self.Controls)
+		self.accframe.pack(fill=Y,side=LEFT)		
+		
+		self.namentryL = Label(self.accframe,text='Поле для\nимени аккаунта')
+		self.namentryL.pack(fill=X,side=TOP)
+		self.namentry = Entry(self.accframe) # account name entry
+		self.namentry.pack(fill=X,side=TOP)
 		self.namentry.insert(0,self.godname)
 		
-		self.keyentry= Entry(self.Controls) # account key entry
-		self.keyentry.grid(column=1 , row=2 )
+		self.keyentryL = Label(self.accframe,text='Поле для\nключа аккаунта')
+		self.keyentryL.pack(fill=X,side=TOP)
+		self.keyentry = Entry(self.accframe) # account key entry
+		self.keyentry.pack(fill=X,side=TOP)
 		self.keyentry.insert(0,self.godkey)
 		
-		self.startbutton=Button(self.Controls,text='Начать (д)опрашивать сервер')
-		self.startbutton.grid(column=0 , row=0 )
-		self.stopbutton=Button(self.Controls,text='Остановить (д)опрос')
-		self.stopbutton.grid(column=1 , row=0 )
+		self.otherc = Frame(self.Controls)
+		self.otherc.pack(fill=Y,side=LEFT)
 		
-	
+		self.startbutton = Button(self.otherc,text='START\n▶')
+		self.startbutton.pack(fill=Y,side=LEFT)
+		
+		self.stopbutton = Button(self.otherc,text='STOP\n⫴⫴')
+		self.stopbutton.pack(fill=Y,side=LEFT)
+		
+		self.savebutton = Button(self.otherc,text='SAVE\n⌻')
+		self.savebutton.pack(fill=Y,side=LEFT)
+		
+		self.dmaxL = Label(self.otherc,text='Dairy max string count:')
+		self.dmaxL.pack(fill=X,side=TOP)
+		self.dmaxE = Entry(self.otherc)
+		self.dmaxE.pack(fill=X,side=TOP)
+		self.dmaxE.insert(0,self.dmax)
+		
+		self.statusLL = Label(self.otherc,text='Статус:')
+		self.statusLL.pack(fill=X,side=TOP)
+		self.statusL = Label(self.otherc,text='Остановлен')
+		self.statusL.pack(fill=X,side=TOP)
+		
 	def updateInfo(self):
 		
 		self.enabled = 1
+		self.statusL.config(text='Запущен')
 		
 		def runner():
 			
@@ -127,24 +150,43 @@ class GV_WatchingCrystal:
 				
 				self.info = GetData(self.godname,self.godkey)			
 				self.updateGValues()
-				
+				# try:
+					# sender = sp.Popen(['notify-send','«GV-WatchingCrystal»', '"',selfinfo['diary_last'],'"'],stdout=sp.PIPE,stderr=sp.STDOUT)
+				# except BaseException:
+					# pass
 				self.root.after(60*1000,runner)
+		
 		if self.clickLock == 0:
 			runner()
 		else:
-			print('LOCKED!!!')
-				
+			print('Сначала остановите опрос сервера.')
+	
+	def stopW(self):
+		self.enabled = 0
+		self.clickLock = 0
+		self.statusL.config(text='Остановлен')
+		
+	def startW(self):
+		self.updateInfo()
+	
 	def updateGValues(self):
 		for i in self.info:
 			if i in self.GValues:
 				self.GValues[i].config(text=self.info[i])
 		self.addDairyString()
-
+	
+	def getGodname(self):
+		self.godname=self.namentry.get()
+	def getGodkey(self):
+		self.godkey=self.keyentry.get()
+	def getDmax(self):
+		self.dmax=int(self.dmaxE.get())
+	def saveGG(self):
+		initfile = open('GVW.init','w')
+		s = self.godname+'\n'+self.godkey+'\n'+str(self.enabled)+'\n'+str(self.dmax)+'\n'
+		initfile.write(s)
+		initfile.close()
+	
 	def start(self):
 		self.root.mainloop()
-	
-	pass
 
-
-app = GV_WatchingCrystal()
-app.start()
