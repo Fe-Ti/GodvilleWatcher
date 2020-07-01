@@ -43,12 +43,12 @@ class GV_WatchingCrystal:
 	
 	def __init__(self):
 		self.root = Tk()
-		self.root.geometry('800x400')
+		#self.root.geometry('800x400')
 		self.initializeStatus()
 		self.initializeControls()
 		self.initialiseDairy()
 
-		if self.godname!='':
+		if self.godname!='' and self.godkey!='':
 			self.updateInfo()
 			self.root.after(5000,self.updateGValues())
 		
@@ -67,33 +67,16 @@ class GV_WatchingCrystal:
 			
 			
 			self.LabelValueKeys.append(self.labeleq[i])
-			self.ValLABELS.append(Label(self.Status, text='', fg= self.FG))
+			self.ValLABELS.append(Label(self.Status, text='',wraplength=30*8, fg= self.FG))
 			self.ValLABELS[k].grid(sticky='w', column=1,row=k)
 			k+=1
 			
 		self.GValues = dict(zip(self.LabelValueKeys,self.ValLABELS))
 	
 	def initialiseDairy(self):	
-		self.Dairy = Label(self.root)
+		self.Dairy = Label(self.root, justify=LEFT, anchor=W, wraplength=80*8)
 		self.Dairy.pack(side=TOP,fill=X)
 		self.dairy=[]
-
-	
-	def addDairyString(self):
-		print(self.info['diary_last'])
-		self.dairy.append(self.info['diary_last'])
-		self.dairystr=''
-		
-		if len(self.dairy)>self.dmax:
-			
-			for i in range(self.dmax):
-				self.dairystr+=self.dairy[-i]
-		
-		else:
-			
-			for i in range(len(self.dairy)):
-				self.dairystr=self.dairy[i]+'\n'+self.dairystr
-		self.Dairy.config(text=self.dairystr)
 	
 	def initializeControls(self):				
 		self.Controls = Frame(self.root)
@@ -136,6 +119,22 @@ class GV_WatchingCrystal:
 		self.statusLL.pack(fill=X,side=TOP)
 		self.statusL = Label(self.otherc,text='Остановлен')
 		self.statusL.pack(fill=X,side=TOP)
+
+	def addDairyString(self):
+		print(self.info['diary_last'])
+		self.dairy.append(self.info['diary_last'])
+		self.dairystr=''
+		
+		if len(self.dairy)>self.dmax:
+			
+			for i in range(self.dmax):
+				self.dairystr+=self.dairy[-i]
+		
+		else:
+			
+			for i in range(len(self.dairy)):
+				self.dairystr=self.dairy[i]+'\n'+self.dairystr
+		self.Dairy.config(text=self.dairystr)
 		
 	def updateInfo(self):
 		
@@ -150,10 +149,7 @@ class GV_WatchingCrystal:
 				
 				self.info = GetData(self.godname,self.godkey)			
 				self.updateGValues()
-				# try:
-					# sender = sp.Popen(['notify-send','«GV-WatchingCrystal»', '"',selfinfo['diary_last'],'"'],stdout=sp.PIPE,stderr=sp.STDOUT)
-				# except BaseException:
-					# pass
+
 				self.root.after(60*1000,runner)
 		
 		if self.clickLock == 0:
@@ -173,7 +169,8 @@ class GV_WatchingCrystal:
 		for i in self.info:
 			if i in self.GValues:
 				self.GValues[i].config(text=self.info[i])
-		self.addDairyString()
+		if 'diary_last' in self.info:
+			self.addDairyString()
 	
 	def getGodname(self):
 		self.godname=self.namentry.get()

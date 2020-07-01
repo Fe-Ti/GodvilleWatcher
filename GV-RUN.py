@@ -3,11 +3,19 @@ from GVwatcherClass import *
 app = GV_WatchingCrystal()
 
 def startWFE(event):
+	app.getGodname()
+	app.getGodkey()
+	app.getDmax()
 	app.startW()
 def stopWFE(event):
 	app.stopW()
+	
 def saveGGFE(event):
+	app.getGodname()
+	app.getGodkey()
+	app.getDmax()
 	app.saveGG()
+	
 def getGodnameFE(event):
 	app.getGodname()
 def getGodkeyFE(event):
@@ -18,8 +26,8 @@ def getDmaxFE(event):
 app.startbutton.bind('<ButtonRelease>',startWFE)
 app.stopbutton.bind('<ButtonRelease>',stopWFE)
 app.savebutton.bind('<ButtonRelease>',saveGGFE)
-app.namentry.bind('<Key>',getGodnameFE)
-app.keyentry.bind('<Key>',getGodkeyFE)
-app.dmaxE.bind('<Key>',getDmaxFE)
+app.namentry.bind('<Return>',getGodnameFE)
+app.keyentry.bind('<Return>',getGodkeyFE)
+app.dmaxE.bind('<Return>',getDmaxFE)
 
 app.start()
