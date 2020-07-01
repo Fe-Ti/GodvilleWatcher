@@ -1,6 +1,8 @@
 from Core_GP import *
 from tkinter import *
 
+# Crystal v1.0 
+
 class GV_WatchingCrystal:
 	godname=''
 	godkey=''
@@ -43,6 +45,7 @@ class GV_WatchingCrystal:
 	
 	def __init__(self):
 		self.root = Tk()
+		self.root.title('GodvilleWatcher')
 		#self.root.geometry('800x400')
 		self.initializeStatus()
 		self.initializeControls()
@@ -50,8 +53,7 @@ class GV_WatchingCrystal:
 
 		if self.godname!='' and self.godkey!='':
 			self.updateInfo()
-			self.root.after(5000,self.updateGValues())
-		
+					
 	def initializeStatus(self):
 
 		self.Status = Frame(self.root,padx=1)
