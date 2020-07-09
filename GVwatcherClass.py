@@ -21,7 +21,7 @@ class GV_WatchingCrystal:
 		enabled = 0 # flag for running
 		dmax = 10 # dairy max
 		pass
-		
+	notifcationTime=5000
 	
 	clickLock = 0 # flag for doubleclick protection
 
@@ -69,7 +69,7 @@ class GV_WatchingCrystal:
 			
 			
 			self.LabelValueKeys.append(self.labeleq[i])
-			self.ValLABELS.append(Label(self.Status, text='',wraplength=30*8, fg= self.FG))
+			self.ValLABELS.append(Label(self.Status, text='',wraplength=20*8, fg= self.FG))
 			self.ValLABELS[k].grid(sticky='w', column=1,row=k)
 			k+=1
 			
@@ -137,27 +137,42 @@ class GV_WatchingCrystal:
 			for i in range(len(self.dairy)):
 				self.dairystr=self.dairy[i]+'\n'+self.dairystr
 		self.Dairy.config(text=self.dairystr)
+	
+	
+	def runner(self):
+		
+		if self.enabled == 1:
+			
+			self.clickLock = 1
+			
+			self.info = GetData(self.godname,self.godkey)			
+			self.updateGValues()
+
+			self.root.after(60*1000,self.runner)
+		
 		
 	def updateInfo(self):
 		
+		print(self.root.winfo_rootx())
 		self.enabled = 1
 		self.statusL.config(text='Запущен')
 		
-		def runner():
-			
-			if self.enabled == 1:
-				
-				self.clickLock = 1
-				
-				self.info = GetData(self.godname,self.godkey)			
-				self.updateGValues()
-
-				self.root.after(60*1000,runner)
-		
 		if self.clickLock == 0:
-			runner()
+			self.runner()
 		else:
 			print('Сначала остановите опрос сервера.')
+	
+	def notify(self,nText):
+		self.notifWindow = Toplevel()
+		self.notifWindow.geometry("+2+2")
+		self.notifWindow.title("Дозорный Годвилля")
+		#nitifTitle = Label(notifWindow, text = "Дозорный Годвилля", justify=LEFT, anchor=W, wraplength=80*8)
+		#nitifTitle.pack() 
+		self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
+		self.notification.pack()
+		
+		self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after 30 seconds
+		#self.root.after(60*1000,self.runner)
 	
 	def stopW(self):
 		self.enabled = 0
@@ -173,6 +188,7 @@ class GV_WatchingCrystal:
 				self.GValues[i].config(text=self.info[i])
 		if 'diary_last' in self.info:
 			self.addDairyString()
+			self.notify(self.info['diary_last'])
 	
 	def getGodname(self):
 		self.godname=self.namentry.get()
@@ -188,4 +204,6 @@ class GV_WatchingCrystal:
 	
 	def start(self):
 		self.root.mainloop()
+
+
 
