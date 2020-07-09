@@ -163,7 +163,7 @@ class GV_WatchingCrystal:
 			print('Сначала остановите опрос сервера.')
 	
 	def notify(self,nText):
-		self.notifWindow = Toplevel()
+		self.notifWindow = Toplevel(self.root)
 		self.notifWindow.geometry("+2+2")
 		self.notifWindow.title("Дозорный Годвилля")
 		#nitifTitle = Label(notifWindow, text = "Дозорный Годвилля", justify=LEFT, anchor=W, wraplength=80*8)
