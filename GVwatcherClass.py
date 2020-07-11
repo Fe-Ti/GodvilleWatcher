@@ -168,19 +168,18 @@ class GV_WatchingCrystal:
 		if self.clickLock == 0:
 			self.runner()
 		else:
-			print('Сначала остановите опрос сервера.')
+			self.statusL.config(text='Сначала остановите опрос сервера.')
 	
 	
 	def notify(self,nText):
-		self.notifWindow = Toplevel(self.root)
-		self.notifWindow.geometry("+2+2") 
-		if self.DND_t == 1:
-			self.notifWindow.transient()
-		self.notifWindow.title("Дозорный Годвилля") 
-		self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
-		self.notification.pack()
-		
-		self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after 30 seconds
+		if self.DND_t == 0:
+			self.notifWindow = Toplevel(self.root)
+			self.notifWindow.geometry("+2+2") 
+			self.notifWindow.title("Дозорный Годвилля") 
+			self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
+			self.notification.pack()
+			
+			self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after 30 seconds
 	
 	def notifier(self):
 		self.notifLine=''
