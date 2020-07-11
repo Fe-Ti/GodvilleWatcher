@@ -131,7 +131,7 @@ class GV_WatchingCrystal:
 		
 		self.statusLL = Label(self.otherc,text='Статус:')
 		self.statusLL.pack(fill=X,side=TOP)
-		self.statusL = Label(self.otherc,text='Остановлен')
+		self.statusL = Label(self.otherc,text='Остановлен', wraplength=30*8)
 		self.statusL.pack(fill=X,side=TOP)
 
 	def adddiaryString(self):
@@ -174,12 +174,12 @@ class GV_WatchingCrystal:
 	def notify(self,nText):
 		if self.DND_t == 0:
 			self.notifWindow = Toplevel(self.root)
-			self.notifWindow.geometry("+2+2") 
+			self.notifWindow.geometry("+2+2")
 			self.notifWindow.title("Дозорный Годвилля") 
 			self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
 			self.notification.pack()
 			
-			self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after 30 seconds
+			self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after several seconds
 	
 	def notifier(self):
 		self.notifLine=''
@@ -196,6 +196,8 @@ class GV_WatchingCrystal:
 			self.notifLine+='Данные устарели\n'
 		if self.godkey!='' and self.notifLine!='':
 			self.notify(self.notifLine)
+			#print('ding-dong') # string for testing
+
 	
 	
 	def stopW(self):
