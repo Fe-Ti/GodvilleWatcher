@@ -4,8 +4,10 @@ from tkinter import *
 # Crystal v1.0 
 
 class GV_WatchingCrystal:
-	godname=''
-	godkey=''
+	
+	notificationTypes = 'diary,level,'.split(',')
+	nToggles = dict(zip(notificationTypes,[1,0]))
+	
 	try:
 		initfile = open('GVW.init','r')
 		godname = initfile.readline().replace('\n','')
@@ -15,11 +17,15 @@ class GV_WatchingCrystal:
 		if enabled!='' and dmax!='':
 			enabled = int(enabled)
 			dmax = int(dmax)
+		
 		initfile.close()
 	
 	except FileNotFoundError:
+		godname=''
+		godkey=''
 		enabled = 0 # flag for running
 		dmax = 10 # dairy max
+		
 		pass
 	notifcationTime=5000
 	
@@ -199,6 +205,8 @@ class GV_WatchingCrystal:
 	def saveGG(self):
 		initfile = open('GVW.init','w')
 		s = self.godname+'\n'+self.godkey+'\n'+str(self.enabled)+'\n'+str(self.dmax)+'\n'
+		for i in self.nToggles:
+			s+=i+'='+self.nToggles[i]+'\n'
 		initfile.write(s)
 		initfile.close()
 	
