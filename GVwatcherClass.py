@@ -1,33 +1,15 @@
 from Core_GP import *
 from tkinter import *
-
+import time 
+from notifCircumstances import *
 # Crystal v1.0 
 
 class GV_WatchingCrystal:
+	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t'.split(','),['','',0,10,0,0,0,0])) # defaults
 	
-	notificationTypes = 'diary,level,'.split(',')
-	nToggles = dict(zip(notificationTypes,[1,0]))
-	
-	try:
-		initfile = open('GVW.init','r')
-		godname = initfile.readline().replace('\n','')
-		godkey = initfile.readline().replace('\n','')
-		enabled = (initfile.readline().replace('\n',''))
-		dmax = (initfile.readline().replace('\n',''))
-		if enabled!='' and dmax!='':
-			enabled = int(enabled)
-			dmax = int(dmax)
-		
-		initfile.close()
-	
-	except FileNotFoundError:
-		godname=''
-		godkey=''
-		enabled = 0 # flag for running
-		dmax = 10 # dairy max
-		
-		pass
+	prevdiary = ''
 	notifcationTime=5000
+	notifLine=''
 	
 	clickLock = 0 # flag for doubleclick protection
 
@@ -49,13 +31,35 @@ class GV_WatchingCrystal:
 	
 	info=dict()
 	
+	
+	
 	def __init__(self):
+		try:
+			initfile = open('GVW.init','r')
+			line = initfile.readline()
+			while line!='':
+				line=line.split('=')
+				name=line[0]
+				val=line[1].replace('\n','')
+				if val.isdigit():
+					val=int(val)
+				self.PARAMETERS[name]=val
+				print (line,name,val,self.PARAMETERS)
+				line = initfile.readline()
+			initfile.close()
+		
+		except FileNotFoundError:
+			pass
+		
+		for i in self.PARAMETERS:
+			setattr(self,i,self.PARAMETERS[i])
+		
 		self.root = Tk()
 		self.root.title('GodvilleWatcher')
-		#self.root.geometry('800x400')
+		
 		self.initializeStatus()
 		self.initializeControls()
-		self.initialiseDairy()
+		self.initialisediary()
 
 		if self.godname!='' and self.godkey!='':
 			self.updateInfo()
@@ -69,7 +73,7 @@ class GV_WatchingCrystal:
 		self.LabelValueKeys=[]
 		self.ValLABELS=[]
 		for i in self.statusLabels:
-			self.heroStatusL.append(Label(self.Status, text=i+' : ', fg= self.FG))
+			self.heroStatusL.append(Label(self.Status, text=i+' : ', fg= self.FG, wraplength=20*8))
 	
 			self.heroStatusL[k].grid(sticky='w', column=0,row=k)
 			
@@ -81,10 +85,12 @@ class GV_WatchingCrystal:
 			
 		self.GValues = dict(zip(self.LabelValueKeys,self.ValLABELS))
 	
-	def initialiseDairy(self):	
-		self.Dairy = Label(self.root, justify=LEFT, anchor=W, wraplength=80*8)
-		self.Dairy.pack(side=TOP,fill=X)
-		self.dairy=[]
+	def initialisediary(self):	
+		self.diaryL = Label(self.root, justify=LEFT, anchor=W, wraplength=80*8)
+		self.diaryL.pack(side=TOP,fill=X)
+		self.diary=[]
+		for i in range (self.dmax):
+			self.diary.append('')
 	
 	def initializeControls(self):				
 		self.Controls = Frame(self.root)
@@ -117,7 +123,7 @@ class GV_WatchingCrystal:
 		self.savebutton = Button(self.otherc,text='SAVE\n⌻')
 		self.savebutton.pack(fill=Y,side=LEFT)
 		
-		self.dmaxL = Label(self.otherc,text='Dairy max string count:')
+		self.dmaxL = Label(self.otherc,text='diary max string count:')
 		self.dmaxL.pack(fill=X,side=TOP)
 		self.dmaxE = Entry(self.otherc)
 		self.dmaxE.pack(fill=X,side=TOP)
@@ -128,21 +134,17 @@ class GV_WatchingCrystal:
 		self.statusL = Label(self.otherc,text='Остановлен')
 		self.statusL.pack(fill=X,side=TOP)
 
-	def addDairyString(self):
+	def adddiaryString(self):
 		print(self.info['diary_last'])
-		self.dairy.append(self.info['diary_last'])
-		self.dairystr=''
-		
-		if len(self.dairy)>self.dmax:
-			
+		if self.prevdiary!=self.info['diary_last']:
+			currtime = str(time.strftime("%H:%M",time.localtime()))+'  '
+			self.diary.append(currtime + self.info['diary_last'])
+			self.prevdiary=self.info['diary_last']
+			self.diarystr=''
 			for i in range(self.dmax):
-				self.dairystr+=self.dairy[-i]
-		
-		else:
-			
-			for i in range(len(self.dairy)):
-				self.dairystr=self.dairy[i]+'\n'+self.dairystr
-		self.Dairy.config(text=self.dairystr)
+				self.diarystr+= self.diary[-i] + '\n'
+
+			self.diaryL.config(text=self.diarystr)
 	
 	
 	def runner(self):
@@ -154,7 +156,7 @@ class GV_WatchingCrystal:
 			self.info = GetData(self.godname,self.godkey)			
 			self.updateGValues()
 
-			self.root.after(60*1000,self.runner)
+			self.root.after(90*1000,self.runner)
 		
 		
 	def updateInfo(self):
@@ -168,17 +170,34 @@ class GV_WatchingCrystal:
 		else:
 			print('Сначала остановите опрос сервера.')
 	
+	
 	def notify(self,nText):
 		self.notifWindow = Toplevel(self.root)
-		self.notifWindow.geometry("+2+2")
-		self.notifWindow.title("Дозорный Годвилля")
-		#nitifTitle = Label(notifWindow, text = "Дозорный Годвилля", justify=LEFT, anchor=W, wraplength=80*8)
-		#nitifTitle.pack() 
+		self.notifWindow.geometry("+2+2") 
+		if self.DND_t == 1:
+			self.notifWindow.transient()
+		self.notifWindow.title("Дозорный Годвилля") 
 		self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
 		self.notification.pack()
 		
 		self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after 30 seconds
-		#self.root.after(60*1000,self.runner)
+	
+	def notifier(self):
+		self.notifLine=''
+		if diaryNotify(self):
+			self.notifLine+='Дневник :\n'+self.info['diary_last']+'\n\n'
+		if questNotify(self):
+			self.notifLine+='Задание :  '+self.info['quest']+'\n\n'
+		if activNotify(self):
+			activatables = 'Активируемое:  '
+			for i in self.info['activatables']:
+				activatables+=i+'; '
+			self.notifLine+=activatables+'\n'
+		if expiredNotify(self):
+			self.notifLine+='Данные устарели\n'
+		if self.godkey!='' and self.notifLine!='':
+			self.notify(self.notifLine)
+	
 	
 	def stopW(self):
 		self.enabled = 0
@@ -193,25 +212,32 @@ class GV_WatchingCrystal:
 			if i in self.GValues:
 				self.GValues[i].config(text=self.info[i])
 		if 'diary_last' in self.info:
-			self.addDairyString()
-			self.notify(self.info['diary_last'])
+			self.adddiaryString()
+		self.notifier()
+		
 	
 	def getGodname(self):
 		self.godname=self.namentry.get()
+		self.PARAMETERS['godname']=self.godname
 	def getGodkey(self):
 		self.godkey=self.keyentry.get()
+		self.PARAMETERS['godkey']=self.godkey
 	def getDmax(self):
 		self.dmax=int(self.dmaxE.get())
+		self.PARAMETERS['dmax']=self.dmax
 	def saveGG(self):
 		initfile = open('GVW.init','w')
-		s = self.godname+'\n'+self.godkey+'\n'+str(self.enabled)+'\n'+str(self.dmax)+'\n'
-		for i in self.nToggles:
-			s+=i+'='+self.nToggles[i]+'\n'
+		print(self.PARAMETERS)
+		self.PARAMETERS['enabled']=self.enabled
+		s = ''
+		for i in self.PARAMETERS:
+			s+=i+'='+str(self.PARAMETERS[i])+'\n'
 		initfile.write(s)
 		initfile.close()
 	
-	def start(self):
+	def startGVW(self):
 		self.root.mainloop()
-
+	def terminateGVW(self):
+		self.root.destroy()
 
 

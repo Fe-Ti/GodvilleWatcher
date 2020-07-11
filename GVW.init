@@ -1,4 +1,8 @@
-
-
-0
-10
+godname=
+godkey=
+enabled=0
+dmax=10
+DND_t=0
+diary_t=0
+quest_t=0
+activatables_t=0

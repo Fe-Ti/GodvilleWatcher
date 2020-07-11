@@ -7,6 +7,7 @@ def heroparser(data):
 	return info
 
 def GetURL(url): # got from some site, added utf-8 decoding
+	print(url)
 	s = 'error'
 	try:
 		f = urllib.request.urlopen(url)

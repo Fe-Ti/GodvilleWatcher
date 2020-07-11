@@ -30,4 +30,4 @@ app.namentry.bind('<Return>',getGodnameFE)
 app.keyentry.bind('<Return>',getGodkeyFE)
 app.dmaxE.bind('<Return>',getDmaxFE)
 
-app.start()
+app.startGVW()
