@@ -8,16 +8,17 @@ class GV_WatchingCrystal:
 	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t'.split(','),['','',0,10,0,0,0,0])) # defaults
 	
 	prevdiary = ''
+	counter=0
 	notifcationTime=5000
 	notifLine=''
 	
 	clickLock = 0 # flag for doubleclick protection
 
-	numbers=list("words,wood_cnt,t_level,quest_progress,max_health,level,inventory_num,inventory_max_num,health,godpower,exp_progress,distance,bricks_cnt,boss_power,ark_m,ark_f,arena_won,arena_lost".split(","))
-	strings=list("town_name,temple_completed_at,shop_name,savings_completed_at,savings,quest,name,motto,gold_approx,godname,gender,fight_type,diary_last,clan_position,clan,boss_name,aura,ark_completed_at,alignment".split(","))
-	objects=list("pet,activatables".split(",")) #inventory is not used
-	bools=list("expired,arena_fight".split(","))
-
+	numbers = list("words,wood_cnt,t_level,quest_progress,max_health,level,inventory_num,inventory_max_num,health,godpower,exp_progress,distance,bricks_cnt,boss_power,ark_m,ark_f,arena_won,arena_lost".split(","))
+	strings = list("town_name,temple_completed_at,shop_name,savings_completed_at,savings,quest,name,motto,gold_approx,godname,gender,fight_type,diary_last,clan_position,clan,boss_name,aura,ark_completed_at,alignment".split(","))
+	objects = list("pet,activatables".split(",")) #inventory is not used
+	bools = list("expired,arena_fight".split(","))
+	namebase = set()
 	allkeys = numbers+strings+objects+bools
 	alllabels = list("Слов в книге,Дерева для ковчега,Уровень торговца,Прогресс задания,Максимальное здоровье,Уровень,Занято в мешке,Размер мешка,Здоровье,Прана,Прогресс уровня,Столбов от столицы,Кирпичей,Мощь босса,М,Ж,Побед,Поражений,Город,Храм построен,Лавка,Лавка открыта,Сбережения,Задание,Имя,Девиз,Золота в карманах,Имя аккаунта,Пол героя,В,Свежая запись в дневнике,Гильдранг,Гильдия,Имя босса,Аура,Ковчег достроен,Характер,Питомец,Активируемые трофеи,Актуальность данных,Находится в пошаговом бою".split(","))
 	labeleq =dict(zip(alllabels,allkeys))
@@ -44,7 +45,7 @@ class GV_WatchingCrystal:
 				if val.isdigit():
 					val=int(val)
 				self.PARAMETERS[name]=val
-				print (line,name,val,self.PARAMETERS)
+				#print (line,name,val,self.PARAMETERS)
 				line = initfile.readline()
 			initfile.close()
 		
@@ -135,7 +136,7 @@ class GV_WatchingCrystal:
 		self.statusL.pack(fill=X,side=TOP)
 
 	def adddiaryString(self):
-		print(self.info['diary_last'])
+		#print(self.info['diary_last'])
 		if self.prevdiary!=self.info['diary_last']:
 			currtime = str(time.strftime("%H:%M",time.localtime()))+'  '
 			self.diary.append(currtime + self.info['diary_last'])
@@ -161,7 +162,7 @@ class GV_WatchingCrystal:
 		
 	def updateInfo(self):
 		
-		print(self.root.winfo_rootx())
+		#print(self.root.winfo_rootx())
 		self.enabled = 1
 		self.statusL.config(text='Запущен')
 		
@@ -201,11 +202,11 @@ class GV_WatchingCrystal:
 	
 	
 	def stopW(self):
-		self.enabled = 0
-		self.clickLock = 0
+		self.enabled,self.clickLock = stopper(self)
 		self.statusL.config(text='Остановлен')
 		
 	def startW(self):
+		self.enabled,_clickLock_ = starter(self)
 		self.updateInfo()
 	
 	def updateGValues(self):
@@ -219,7 +220,8 @@ class GV_WatchingCrystal:
 	
 	def getGodname(self):
 		self.godname=self.namentry.get()
-		self.PARAMETERS['godname']=self.godname
+		self.PARAMETERS['godname']= kkombo(self)
+
 	def getGodkey(self):
 		self.godkey=self.keyentry.get()
 		self.PARAMETERS['godkey']=self.godkey

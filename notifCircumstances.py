@@ -5,12 +5,23 @@ def diaryNotify(self):
 		YORN = False
 	return YORN
 
+def kkombo(self):
+	if self.godname not in self.namebase:
+		self.counter+=1
+		self.namebase.add(self.godname)
+	return self.godname
+
 def questNotify(self) :
 	if 'quest' in self.info:
 		YORN = (self.PARAMETERS['quest_t']==1)
 	else:
 		YORN = False
 	return YORN
+	
+def starter(self):
+	self.namentry.config(state='disabled')
+	self.keyentry.config(state='disabled')
+	return 1,1
 
 def activNotify(self) : 
 	if 'activatables' in self.info:
@@ -18,6 +29,11 @@ def activNotify(self) :
 	else:
 		YORN = False
 	return YORN
+
+def stopper(self):
+	self.namentry.config(state='normal')
+	self.keyentry.config(state='normal')
+	return 0,0
 
 def expiredNotify(self) : 
 	if 'expired' in self.info:
