@@ -220,7 +220,8 @@ class GV_WatchingCrystal:
 			dlf = open ('Diary_log.txt','a')
 			s=self.godname + ' ' +self.info['name']+ '\n'
 			for i in self.diary:
-				s+=i+'\n'
+				if i!='':
+					s+=i+'\n'
 			dlf.write(s)
 			dlf.close()
 		
