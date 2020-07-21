@@ -1,6 +1,7 @@
 def diaryNotify(self):
 	if 'diary_last' in self.info:
-		YORN = (self.PARAMETERS['diary_t']==1)#(self.prevdiary!=self.info['diary_last'])
+		YORN = (self.PARAMETERS['diary_t']==1)*(self.prevdiarynotif!=self.info['diary_last'])
+		self.prevdiarynotif=self.info['diary_last']
 	else:
 		YORN = False
 	return YORN

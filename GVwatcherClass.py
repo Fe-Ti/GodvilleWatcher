@@ -1,15 +1,22 @@
 from Core_GP import *
 from tkinter import *
 import time 
+import platform
 from notifCircumstances import *
+
+if platform.system()=='Linux':
+	import Linotif
+
+
 # Crystal v1.0 
 
 class GV_WatchingCrystal:
-	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t'.split(','),['','',0,10,0,0,0,0])) # defaults
+	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t,logdiary'.split(','),['','',0,10,0,0,0,0,0])) # defaults
 	
 	prevdiary = ''
+	prevdiarynotif = ''
 	counter=0
-	notifcationTime=5000
+	notifcationTime=10000
 	notifLine=''
 	
 	clickLock = 0 # flag for doubleclick protection
@@ -146,6 +153,8 @@ class GV_WatchingCrystal:
 				self.diarystr+= self.diary[-i] + '\n'
 
 			self.diaryL.config(text=self.diarystr)
+			
+				
 	
 	
 	def runner(self):
@@ -174,13 +183,16 @@ class GV_WatchingCrystal:
 	
 	def notify(self,nText):
 		if self.DND_t == 0:
-			self.notifWindow = Toplevel(self.root)
-			self.notifWindow.geometry("+2+2")
-			self.notifWindow.title("Дозорный Годвилля") 
-			self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
-			self.notification.pack()
-			
-			self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after several seconds
+			if platform.system()=='Linux':
+				Linotif.notify(self,nText)
+			else:
+				self.notifWindow = Toplevel(self.root)
+				self.notifWindow.geometry("+2+2")
+				self.notifWindow.title("Дозорный Годвилля") 
+				self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
+				self.notification.pack()
+				
+				self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after several seconds
 	
 	def notifier(self):
 		self.notifLine=''
@@ -204,10 +216,18 @@ class GV_WatchingCrystal:
 	def stopW(self):
 		self.enabled,self.clickLock = stopper(self)
 		self.statusL.config(text='Остановлен')
+		if self.logdiary == 1 and self.diary!=[]:
+			dlf = open ('Diary_log.txt','a')
+			s=self.godname + ' ' +self.info['name']+ '\n'
+			for i in self.diary:
+				s+=i+'\n'
+			dlf.write(s)
+			dlf.close()
 		
 	def startW(self):
 		self.enabled,_clickLock_ = starter(self)
-		self.updateInfo()
+		if self.godname!='':
+			self.updateInfo()
 	
 	def updateGValues(self):
 		for i in self.info:
