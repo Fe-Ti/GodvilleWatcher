@@ -6,9 +6,9 @@ def notify(self,nText):
 		if self.platform =='Linux':
 			Linotif.notify(self,nText)
 		else:
-			self.platform='fallback'
+			self.platformsupport='fallback'
 			
-		if self.platform=='fallback':
+		if self.platformsupport=='fallback':
 			fallbackNotification(self,nText)
 
 

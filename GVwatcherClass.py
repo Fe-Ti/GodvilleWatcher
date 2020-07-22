@@ -64,6 +64,7 @@ class GV_WatchingCrystal:
 			setattr(self,i,self.PARAMETERS[i])
 			
 		self.platform = platform.system()
+		self.platformsupport = 'full'
 		
 		self.root = Tk()
 		self.root.title('GodvilleWatcher')
