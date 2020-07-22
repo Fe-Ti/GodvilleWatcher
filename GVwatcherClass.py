@@ -2,10 +2,9 @@ from Core_GP import *
 from tkinter import *
 import time 
 import platform
-from notifCircumstances import *
+from notifCircumstances import * 
+import nModule # handles all platform-dependent notification routine 
 
-if platform.system()=='Linux':
-	import Linotif
 
 
 # Crystal v1.0 
@@ -15,6 +14,8 @@ class GV_WatchingCrystal:
 	
 	prevdiary = ''
 	prevdiarynotif = ''
+	prevquestnotif = ''
+	prevactivnotif = ''
 	counter=0
 	notifcationTime=10000
 	notifLine=''
@@ -61,7 +62,7 @@ class GV_WatchingCrystal:
 		
 		for i in self.PARAMETERS:
 			setattr(self,i,self.PARAMETERS[i])
-		
+		self.platform = platform.system()
 		self.root = Tk()
 		self.root.title('GodvilleWatcher')
 		
@@ -182,17 +183,7 @@ class GV_WatchingCrystal:
 	
 	
 	def notify(self,nText):
-		if self.DND_t == 0:
-			if platform.system()=='Linux':
-				Linotif.notify(self,nText)
-			else:
-				self.notifWindow = Toplevel(self.root)
-				self.notifWindow.geometry("+2+2")
-				self.notifWindow.title("Дозорный Годвилля") 
-				self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
-				self.notification.pack()
-				
-				self.notifWindow.after(self.notifcationTime, lambda: self.notifWindow.destroy()) # Destroy the widget after several seconds
+		nModule.notify(self,nText)
 	
 	def notifier(self):
 		self.notifLine=''

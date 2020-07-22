@@ -14,7 +14,8 @@ def kkombo(self):
 
 def questNotify(self) :
 	if 'quest' in self.info:
-		YORN = (self.PARAMETERS['quest_t']==1)
+		YORN = (self.PARAMETERS['quest_t']==1)*(self.prevquestnotif!=self.info['quest'])
+		self.prevquestnotif=self.info['quest']
 	else:
 		YORN = False
 	return YORN
@@ -26,7 +27,8 @@ def starter(self):
 
 def activNotify(self) : 
 	if 'activatables' in self.info:
-		YORN = (self.PARAMETERS['activatables_t']==1)
+		YORN = (self.PARAMETERS['activatables_t']==1)*(self.info['activatables']!=[])*(self.prevactivnotif!=self.info['activatables'])
+		self.prevactivnotif=self.info['activatables']
 	else:
 		YORN = False
 	return YORN
