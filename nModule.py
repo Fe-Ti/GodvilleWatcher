@@ -16,6 +16,8 @@ def fallbackNotification(self,nText):
 	self.notifWindow = Toplevel(self.root)
 	self.notifWindow.geometry("+2+2")
 	self.notifWindow.attributes('-topmost', True)
+	if self.platform=='Windows':
+		self.notifWindow.attributes('-disabled', True)
 	self.notifWindow.title("Дозорный Годвилля") 
 	self.notification = Label(self.notifWindow, text = nText,  justify=LEFT, anchor=W, wraplength=80*8)
 	self.notification.pack()	
