@@ -4,6 +4,7 @@ try:
 	importerror = 0
 except ModuleNotFoundError:
 	importerror = 1
+	pass
 	
 if importerror==0:
 	def notify(self,nText):
