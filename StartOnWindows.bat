@@ -1,1 +1,1 @@
-python GV-RUN.py
+start python GV-RUN.py
