@@ -10,7 +10,7 @@ import os.path
 # Crystal v1.0 
 
 class GV_WatchingCrystal:
-	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t,logdiary'.split(','),['','',0,10,0,0,0,0,0])) # defaults
+	PARAMETERS = dict(zip('godname,godkey,enabled,dmax,DND_t,diary_t,quest_t,activatables_t,logdiary'.split(','),['','',0,10,0,1,1,1,0])) # defaults
 	
 	prevdiary = ''
 	prevdiarynotif = ''
@@ -44,7 +44,7 @@ class GV_WatchingCrystal:
 	
 	def __init__(self):
 		try:
-			initfile = open(os.path.normpath('../GVW.init'),'r')
+			initfile = open(('GVW.init'),'r')
 			line = initfile.readline()
 			while line!='':
 				line=line.split('=')
@@ -58,6 +58,7 @@ class GV_WatchingCrystal:
 			initfile.close()
 		
 		except FileNotFoundError:
+			print (' No GVW.init, falling back to defaults.')
 			pass
 		
 		for i in self.PARAMETERS:

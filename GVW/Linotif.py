@@ -4,6 +4,7 @@ try:
 	importerror = 0
 except ModuleNotFoundError:
 	importerror = 1
+	print ('ModuleNotFoundError : dbus or dbus.mainloop.glib')
 	pass
 	
 if importerror==0:
