@@ -1,10 +1,10 @@
 from Core_GP import *
+from notifCircumstances import * 
+import nModule # handles all platform-dependent notification routine 
 from tkinter import *
 import time 
 import platform
-from notifCircumstances import * 
-import nModule # handles all platform-dependent notification routine 
-
+import os.path
 
 
 # Crystal v1.0 
@@ -44,7 +44,7 @@ class GV_WatchingCrystal:
 	
 	def __init__(self):
 		try:
-			initfile = open('../GVW.init','r')
+			initfile = open(os.path.normpath('../GVW.init'),'r')
 			line = initfile.readline()
 			while line!='':
 				line=line.split('=')
