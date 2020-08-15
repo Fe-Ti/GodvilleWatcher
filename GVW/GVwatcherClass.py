@@ -44,7 +44,7 @@ class GV_WatchingCrystal:
 	
 	def __init__(self):
 		try:
-			initfile = open('GVW.init','r')
+			initfile = open('../GVW.init','r')
 			line = initfile.readline()
 			while line!='':
 				line=line.split('=')
